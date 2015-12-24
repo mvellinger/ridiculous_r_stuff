@@ -9,6 +9,11 @@ library(rgeos)
 library(rworldmap)
 library(grid)
 library(useful)
+library(Cairo)
+
+
+#windowsFonts(Arial=windowsFont("TT Arial"))
+
 #----- data wrangling -----#
 
 # Load dataset
@@ -51,6 +56,7 @@ centroids <- as.data.frame(coordinates(map))
 names(centroids) <- c("long", "lat")  #more sensible column names
 centroids$id <- map$ISO3.1
 labels <- merge(centroids, data, by = "id", all.x = T)
+annotations <- labels[is.na(labels$bin) == FALSE, ]
 
 #------ theme section -----#
 
@@ -110,15 +116,15 @@ P <- ggplot() +
   ylab("LATITUDE") + 
   scale_fill_manual(values=c("grey40", "grey60", "grey80", "yellow", "red")) +  
   dark_map_theme() + 
-  geom_point(data = labels[is.na(labels$bin) == FALSE, ], aes(long, lat), size = 3.5, colour = "red") +
-  geom_text(data = labels[is.na(labels$bin) == FALSE, ], aes(long, lat, label = count), size = 1, fontfamily = "Montserrat", colour = "grey95", hjust = 0.5)
+  geom_point(data = annotations, aes(long, lat), size = 3.5, colour = "red") +
+  geom_text(data = annotations, aes(long, lat, label = count), size = 1.2, colour = "grey95", hjust = 0.5)
 
 
 #Grid
 
 # Open new file device
 #png(filename="test.png", width = 1920, height = 1080, units = "px")
-png(filename = "test.png", width = 15, height = 10, units = "in", res = 300)
+png(filename = "test.png", type="cairo" ,width = 15, height = 10, units = "in", res = 300)
 # Open new grid page
 grid.newpage()
 
