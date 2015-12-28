@@ -1,0 +1,124 @@
+---
+title: "Danny fitness 2015"
+author: "Martijn Vellinger"
+date: "28 Dec 2015"
+output: html_document
+---
+```{r, preload}
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(lubridate)
+library(reshape2)
+dark_bar_theme <- function() {
+    theme(
+        axis.text.x = element_text(angle = 90, size = 7, family = "Montserrat", colour = "grey90", hjust = 1),
+
+        axis.text.y = element_text(size = 7, family = "Montserrat", colour = "grey90", hjust = 1),
+
+        plot.title = element_text(colour = "grey90", size = 12, family = "Montserrat", hjust = 1),
+
+        axis.title = element_text(colour = "grey90", size = 8, family = "Montserrat", hjust = 0),
+
+        plot.background = element_rect(fill = "grey20", colour = "grey25"),
+        panel.background = element_rect(fill = "grey20"),
+        panel.grid.major.x = element_line(colour = "grey80", linetype = "dotted", size = 0.2),
+        panel.grid.minor.x = element_line(colour = "grey60", linetype = "dotted", size = 0.2),
+        panel.grid.major.y = element_line(colour = "grey80", linetype = "dotted", size = 0.2),
+        panel.grid.minor.y = element_line(colour = "grey60", linetype = "dotted", size = 0.2),
+        panel.border = element_blank(),
+        legend.justification=c(1,1),
+        legend.position=c(1,1),
+        legend.background = element_blank(),
+        legend.title = element_text(size = 12,
+                                    family = "Montserrat",
+                                    colour = "grey90",
+                                    hjust = 1),
+        legend.text = element_text(size = 9,
+                                   family = "Montserrat",
+                                   colour = "grey90",
+                                   hjust = 1),
+        legend.key = element_blank(),
+        legend.key.size = unit(20, "native")
+    )
+}
+```
+
+# Reading the data
+
+Danny has supplied 3 export files from his various fitness tracking tools (FitNotes, Libra and MyFitnessPal).
+Our first order of business is loading these in and looking what's there. Annoyingly, the .csv files do not use the same separator character, so we'll specify each:
+
+```{r, read.data}
+fitnotes <- read.csv("FitNotes_Export.csv", sep=",", stringsAsFactors = F)
+libra <- read.csv("Libra_2015-12-28.csv", sep=";", stringsAsFactors = F)
+myfitnesspal <- read.csv("MyFitnessPal_Food_Data_Export.csv", sep=",", stringsAsFactors = F)
+
+head(fitnotes, n=3)
+head(libra, n=3)
+head(myfitnesspal, n=3)
+```
+
+Obviously there are a few issues here, first of which is that the date fields are different in each file.
+That is going to be the first thing we fix by adding a new column to each data set with a proper date object.
+
+```{r, fix.dates}
+myfitnesspal$p.date <- as.Date(strptime(myfitnesspal$Date, "%d-%b-%y"))
+libra$p.date <- as.Date(strptime(libra$X.date, "%d/%m/%y %H:%M"))
+fitnotes$p.date <- as.Date(fitnotes$Date)
+```
+
+Not all of the data is useful, so we're going to reduce our data frames and keep only what we want using dplyr:
+
+```{r, reduce.data}
+myfitnesspal <- select(myfitnesspal, Calories, Carbs, Fat, Protein, Cholesterol, Sodium, Sugars, Fibre, p.date)
+
+fitnotes <- select(fitnotes, Exercise, Category, Weight..kgs., Reps, p.date)
+
+libra <- select(libra, weight, p.date)
+
+# Sodium is in mg. everything else in g. so we're going to correct that:
+myfitnesspal$Sodium <- myfitnesspal$Sodium / 1000 
+myfitnesspal$Cholesterol <- myfitnesspal$Cholesterol / 1000
+```
+
+Let's see how Danny's meal composition changes over time:
+
+```{r, melt}
+macros <- select(myfitnesspal, p.date, Protein, Carbs, Fat)
+macros$week <- week(macros$p.date)
+macros.agg <- arrange(aggregate(.~week, macros, FUN =mean), by=week)
+
+calories <- select(myfitnesspal, p.date, Calories) 
+calories$week <- week(calories$p.date)
+calories.agg <- aggregate(.~week, calories[2:3], FUN = mean)
+macros.melt <- melt(macros.agg, id.vars="week", measure.vars = c("Protein", "Carbs", "Fat") ) #create a long form data frame
+calories.melt <- melt(calories.agg, id.vars="week") #create a long form data frame
+
+libra.subset <- subset(libra, p.date < max(calories$p.date + 1) & p.date > min(calories$p.date -1))
+
+
+#normalize low calorie measurements (meals which were not logged)
+calories$rollmean <- rollmean(calories$Calories, k=3)[1:nrow(calories)]
+
+calories$Calories[calories$Calories < 1600] <- calories$rollmean[calories$Calories < 1600]
+
+calories <- select(calories, p.date, Calories)
+#mergedcvsw$Calories[mergedcvsw$Calories < 1800] <- mean(mergedcvsw$Calories[mergedcvsw$Calories > 1600])
+#mergedcvsw$Calories[mergedcvsw$Calories > 3200] <- mean(mergedcvsw$Calories[mergedcvsw$Calories > 1600])
+#normalize calorie values down to a more reasonable range:
+
+mergedcvsw <- merge(calories, libra.subset, by = "p.date")
+
+merged.melt <- melt(select(mergedcvsw, p.date, Calories, weight), id.vars = "p.date")
+
+ggplot(data = merged.melt, aes(x=p.date, y=value, fill=variable, colour=variable)) + geom_point(size=3) + geom_point(size=1, colour="grey30") + geom_line(stat="identity") + geom_smooth() + dark_bar_theme() + scale_x_date(breaks = "week") + facet_grid(variable~., scales="free_y") + scale_color_manual(values = c("#bdffd8", "#fcff66"))
+
+
+#macros
+ggplot(data=macros.melt, aes(x = week, y = value, fill = variable)) + geom_bar(stat="identity", position = position_dodge()) + dark_bar_theme() + scale_x_continuous(breaks = seq(1,51,1)) + scale_y_continuous() + scale_fill_manual(values = c("#adf0ca", "#73acba", "#ffff82"), name="VARIABLE")
+
+#calories
+ggplot(data = merged.melt, aes(x=p.date, y=value, fill=variable, colour=variable)) + geom_point(size=3) + geom_point(size=1, colour="grey30") + geom_line(stat="identity") + dark_bar_theme() + scale_x_date(breaks = "week")
+
+
