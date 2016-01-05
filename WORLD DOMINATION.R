@@ -14,6 +14,12 @@ library(Cairo)
 
 #windowsFonts(Arial=windowsFont("TT Arial"))
 
+# optional live data retrieval
+ data <- CountryCodeSpread("2016-01-04", "2016-01-05")
+ data <- as.data.frame(data)
+ names(data) <- c("issuing_country_code", "result")
+ write.csv(data, "countrydata.csv", row.names = FALSE)
+
 #----- data wrangling -----#
 
 # Load dataset
@@ -108,7 +114,7 @@ P <- ggplot() +
                show_guide = FALSE
                ) +
   coord_map() +
-  labs(title = "FOREIGN EVIDENCE SINCE 2015-11-23") +
+  labs(title = "EVIDENCE BY COUNTRY DEC 2015") +
   labs(fill = "CUSTOMERS") +
   scale_x_continuous(breaks = seq(-180,180,10), expand = c(0,0)) +
   scale_y_continuous(breaks = seq(-60,80,10), limits = c(-60,75), expand = c(0,0)) +
@@ -124,7 +130,7 @@ P <- ggplot() +
 
 # Open new file device
 #png(filename="test.png", width = 1920, height = 1080, units = "px")
-png(filename = "test.png", type="cairo" ,width = 15, height = 10, units = "in", res = 300)
+png(filename = "test.png", width = 15, height = 10, units = "in", res = 300)
 # Open new grid page
 grid.newpage()
 
