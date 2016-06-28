@@ -15,13 +15,11 @@ currency_theme = function(base_size = 10) {
           panel.background = bg_rect,
           panel.border = element_rect(colour = "grey60", size = 0.35),
           legend.background = bg_rect,
-          panel.grid.major = element_line(colour = "grey80", size = 0.25),
-          panel.grid.minor = element_line(colour = "grey80", size = 0.25),
+          panel.grid.major = element_line(colour = "grey70", size = 0.25, linetype = 3),
+          panel.grid.minor = element_line(colour = "grey70", size = 0.25, linetype = 3),
           legend.key.width = unit(1.5, "line"),
           legend.key = element_blank(),
-          legend.position="bottom",
-          panel.grid.minor.x = element_blank(),
-          panel.grid.minor.y = element_blank())
+          legend.position="bottom")
 }
 
 # Data collection
@@ -71,19 +69,33 @@ label_data <- gather(current_values, variable, value, -date)
 
 
 
-P1 <- ggplot(data = plot_data, aes(x = date, y = value, color = variable)) + 
+P1 <- ggplot(data = plot_data, 
+             aes(x     = date,
+                 y     = value,
+                 color = variable)) + 
   geom_line(size = 0.5) + 
   geom_point(data = label_data,
-             aes(x=date, y=value, color=variable), 
+             aes(x     = date,
+                 y     = value,
+                 color = variable), 
              size = 1) + 
   geom_text(data = label_data, 
-            aes(x=date, y=value, color=variable, label = paste(variable, "\n", value, sep ="")),
+            aes(x     = date, 
+                y     = value, 
+                color = variable, 
+                label = paste(variable, "\n", value, sep ="")),
             size = 2.5, 
             nudge_x = 8, 
             show.legend = FALSE) +
   currency_theme() + 
   scale_color_manual(values = c("steelblue", "red")) + 
-  scale_y_continuous(breaks = pretty_breaks(n = 6), limits = c(min(plot_data$value) - 0.1, max(plot_data$value) + 0.1)) +
-  scale_x_date(date_breaks = "1 month", date_labels = "%B", expand = c(0.06,0)) + 
-  labs(x ="Date", y = "Exchange rate", title = "GBP exchange rates", color = "Currency") 
+  scale_y_continuous(breaks = pretty_breaks(n = 6), 
+                     limits = c(min(plot_data$value) - 0.1, max(plot_data$value) + 0.1)) +
+  scale_x_date(date_breaks = "1 month", 
+               date_labels = "%B", 
+               expand = c(0.06,0)) + 
+  labs(x     = "Date", 
+       y     = "Exchange rate", 
+       title = "GBP exchange rates", 
+       color = "Currency") 
 
