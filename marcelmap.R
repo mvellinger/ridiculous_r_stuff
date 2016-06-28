@@ -15,7 +15,7 @@ library(Cairo)
 #windowsFonts(Arial=windowsFont("TT Arial"))
 
 # optional live data retrieval
- data <- CountryCodeSpread("2016-01-01", "2016-01-19")
+ data <- CountryCodeSpread("2015-11-01", "2016-01-19")
  data <- as.data.frame(data)
  names(data) <- c("issuing_country_code", "result")
  write.csv(data, "countrydata.csv", row.names = FALSE)
@@ -35,12 +35,7 @@ names(data) <- c("id", "count")
 # we need to create some bins, or our map will be awful due to the vastly higher number
 # of UK evidence
 
-data$bins <- cut(data$count, 
-                 breaks = c(0, 10, 50, 100, 200, Inf), 
-                 labels = c("1-10","10-50", "50-100", "100-200", "200+"))
-
-
-
+data$bins <- data$count > 0
 
 #----- map wrangling -----#
 
@@ -69,20 +64,20 @@ annotations <- labels[is.na(labels$bin) == FALSE, ]
 # define theme
 dark_map_theme <- function() {
   theme(
-    axis.text.x = element_text(angle = 90, size = 7, family = "Montserrat", colour = "grey90", hjust = 1),
-    axis.text.y = element_text(size = 7, family = "Montserrat", colour = "grey90", hjust = 1),
-    plot.title = element_text(colour = "grey90", size = 12, family = "Montserrat", hjust = 1),
-    axis.title = element_text(colour = "grey90", size = 8, family = "Montserrat", hjust = 0),
-    plot.background = element_rect(fill = "grey20", colour = "grey25"),
-    panel.background = element_rect(fill = "grey20"),
-    panel.grid.major.x = element_line(colour = "grey80", linetype = "dotted", size = 0.2),
-    panel.grid.minor.x = element_line(colour = "grey60", linetype = "dotted", size = 0.2),
-    panel.grid.major.y = element_line(colour = "grey80", linetype = "dotted", size = 0.2),
-    panel.grid.minor.y = element_line(colour = "grey60", linetype = "dotted", size = 0.2),
+    axis.text.x = element_text(angle = 90, size = 7, family = "Montserrat", colour = "grey20", hjust = 1),
+    axis.text.y = element_text(size = 7, family = "Montserrat", colour = "grey20", hjust = 1),
+    plot.title = element_text(colour = "grey20", size = 12, family = "Montserrat", hjust = 1),
+    axis.title = element_text(colour = "grey20", size = 8, family = "Montserrat", hjust = 0),
+    plot.background = element_rect(fill = "grey99", colour = "grey80"),
+    panel.background = element_rect(fill = "grey99"),
+    panel.grid.major.x = element_line(colour = "grey20", linetype = "dotted", size = 0.2),
+    panel.grid.minor.x = element_line(colour = "grey30", linetype = "dotted", size = 0.2),
+    panel.grid.major.y = element_line(colour = "grey20", linetype = "dotted", size = 0.2),
+    panel.grid.minor.y = element_line(colour = "grey30", linetype = "dotted", size = 0.2),
     panel.border = element_blank(),
     legend.justification=c(0,0),
     legend.position=c(0,0),
-    legend.background = element_rect(fill = "grey20", colour = "grey25"),
+    legend.background = element_rect(fill = "grey90", colour = "grey80"),
     legend.title = element_text(size = 12,
                                 family = "Montserrat",
                                 colour = "grey90",
@@ -102,28 +97,29 @@ dark_map_theme <- function() {
 
 P <- ggplot() +
   geom_polygon(data = final.plot,
-               aes(x = long, y = lat, group = group, fill = bins), 
-               alpha = 0.5, 
-               size = 0.125
-               ) +
-  geom_polygon(data = final.plot,
-               aes(x = long, y = lat, group = group), 
-               fill = NA, 
-               size = 0.125, 
-               colour = "grey95", 
+               aes(x = long, y = lat, group = group, fill = bins),
+               alpha = 1,
+               size = 0.125,
+               colour = "grey20"
+                  ) +
+  geom_polygon(data = final.plot[is.na(final.plot$bins) == TRUE, ],
+               aes(x = long, y = lat, group = group),
+               fill = "grey95",
+               size = 0.125,
+               colour = "grey20",
                show_guide = FALSE
                ) +
   coord_map() +
-  labs(title = "EVIDENCE BY COUNTRY JAN 2016") +
+  labs(title = "COUNTRIES SERVED") +
   labs(fill = "CUSTOMERS") +
   scale_x_continuous(breaks = seq(-180,180,10), expand = c(0,0)) +
   scale_y_continuous(breaks = seq(-60,80,10), limits = c(-60,75), expand = c(0,0)) +
   xlab("LONGITUDE") +
-  ylab("LATITUDE") + 
-  scale_fill_manual(values=c("grey40", "grey60", "grey80", "yellow", "red")) +  
-  dark_map_theme() + 
-  geom_point(data = annotations, aes(long, lat), size = 3.5, colour = "red") +
-  geom_text(data = annotations, aes(long, lat, label = count), size = 1.2, colour = "grey95", hjust = 0.5)
+  ylab("LATITUDE") +
+  scale_fill_manual(values=c(colour1, "grey95")) +
+  dark_map_theme() +
+  theme(legend.position = "none")
+
 
 
 #Grid
@@ -138,6 +134,6 @@ grid.newpage()
 # 108 rows, 192 columns means each cell is 10px * 10px
 pushViewport(viewport(layout = grid.layout(108, 192)))
 # Add background rectangle
-grid.rect(gp = gpar(fill = "grey20", col = "grey10"))
+grid.rect(gp = gpar(fill = "grey99", col = "grey95"))
 print(P, vp = vplayout(2 :107, 2:191))
 dev.off()
