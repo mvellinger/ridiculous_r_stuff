@@ -1,0 +1,37 @@
+Character,Move Name ,Startup,Active,Recovery,On Hit,On Block,VTC On Hit,VTC On Block,Damage,Stun,Attack Lvl,Cancel Into,KD Adv,KDR Adv,KDRB Adv
+ken,stand LP,4,2,7,5,2,~,-3,30,70,H,ch/sp/su/vt/vs,~,~,~
+ken,stand MP,7,2,15,3,1,6,4,60,100,H,sp/su/vt/vs,~,~,~
+ken,stand HP,9,2,20,5,-3,13,5,80,150,H,sp/su/vt/vs,~,~,~
+ken,stand LK,4,2,9,3,-1,~,-4,30,70,H,sp/su/vt/vs,~,~,~
+ken,stand MK,8,3,19,1,-2,9,6,60,100,H,vt/vs,~,~,~
+ken,stand HK,14,2,26,3,-4,10,3,80,150,H,vt/vs,144,44,49
+ken,crouch LP,4,3,7,4,2,~,-2,30,70,H,ch/sp/su/vt/vs,~,~,~
+ken,crouch MP,6,3,12,5,2,6,3,60,100,H,sp/su/vt/vs,~,~,~
+ken,crouch HP,6,5,22,-4,-9,8,3,90,150,H,sp/su/vt/vs,115,46,51
+ken,crouch LK,4,2,7,4,1,-1,-4,20,70,L,ch/vt/vs,~,~,~
+ken,crouch MK,6,2,14,0,-4,1,-3,50,100,L,sp/su/vt/vs,~,~,~
+ken,crouch HK,8,3,23,KD,-12,KD (+85/36/41),0,90,150,L,vt/vs,73,24,29
+akuma,stand LP,3,2,7,4,2,6,4,30,70,H,ch/sp/su/vt/vs,~,~,~
+akuma,stand MP,7,3,14,3,1,10,8,60,100,H,sp/su/vt/vs,~,~,~
+akuma,stand HP,8,3,19,2,-5,17,15,80,150,H,su/vt,106,42,47
+akuma,stand LK,4,3,10,2,1,8,7,30,70,H,sp/su/vt/vs,~,~,~
+akuma,stand MK,5,2,16,4,-2,8,2,60,100,H,sp/su/vt/vs,~,~,~
+akuma,stand HK,12,2,22,3,-2,12,7,80,120,H,vt,~,~,~
+akuma,crouch LP,4,2,6,4,2,5,3,30,70,H,ch/sp/su/vt/vs,~,~,~
+akuma,crouch MP,6,3,12,5,3,7,5,60,100,H,sp/su/vt/vs,~,~,~
+akuma,crouch HP,10,4,16,8,3,18,13,80,150,H,vt,92,60,60
+akuma,crouch LK,4,2,7,2,1,4,3,20,70,L,ch/vt,~,~,~
+akuma,crouch MK,6,2,14,3,-1,9,5,50,100,L,sp/su/vt/vs,~,~,~
+akuma,crouch HK,7,2,24,KD,-15,KD (+86/37/42),14,90,150,L,vt,67,18,23
+ryu,stand LP,3,2,7,4,2,4,2,30,70,H,sp/su/vt,~,~,~
+ryu,stand MP,5,3,10,7,1,11,5,60,100,H,sp/su/vt,~,~,~
+ryu,stand HP,8,3,20,3,-1,12,8,90,150,H,su/vt,99,35,40
+ryu,stand LK,4,3,11,-1,-2,4,3,30,70,H,sp/su/vt,~,~,~
+ryu,stand MK,8,3,16,2,-2,11,7,60,100,H,vt,~,~,~
+ryu,stand HK,10,2,20,4,-1,11,~,90,150,H,vt,~,~,~
+ryu,crouch LP,4,3,5,3,2,2,2,30,70,H,ch/sp/su/vt,~,~,~
+ryu,crouch MP,6,3,12,4,2,10,8,60,100,H,sp/su/vt,~,~,~
+ryu,crouch HP,6,4,24,-7,-10,12,9,90,150,H,sp/su/vt,~,~,~
+ryu,crouch LK,4,2,7,2,1,2,1,20,70,L,ch/vt,~,~,~
+ryu,crouch MK,7,3,13,1,-3,8,4,50,100,L,sp/su/vt,~,~,~
+ryu,crouch HK,8,2,22,KD,-11,KD (+83/34/39),12,90,150,L,vt,69,20,25
